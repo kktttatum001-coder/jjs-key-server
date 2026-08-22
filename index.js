@@ -9,6 +9,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 let keyData = { key: "", expiresAt: 0 };
 const KEY_DURATION_MINUTES = 60;
 
+// 👑 กำหนดรหัสคีย์ส่วนตัวสำหรับเจ้าของ (เปลี่ยนข้อความในเครื่องหมายคำพูดได้ตามใจชอบเลยครับ)
+const OWNER_KEY = "MY-SECRET-OWNER-KEY-999";
+
 function refreshKeyIfNeeded() {
     const now = Date.now();
     if (!keyData.key || now >= keyData.expiresAt) {
@@ -20,27 +23,30 @@ function refreshKeyIfNeeded() {
     }
 }
 
-// หน้าเว็บหลัก (สำหรับกดไปดูโฆษณา)
+// หน้าเว็บหลัก
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// หน้าเว็บแสดงคีย์ (หลังจากผ่านโฆษณาแล้ว)
+// หน้าเว็บแสดงคีย์
 app.get('/key', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'key.html'));
 });
 
-// API ดึงคีย์
+// API ดึงคีย์ปกติ
 app.get('/api/get-key', (req, res) => {
     refreshKeyIfNeeded();
     res.json(keyData);
 });
 
-// API ตรวจสอบคีย์
+// API ตรวจสอบคีย์ (รองรับทั้งคีย์ปกติและ Owner Key)
 app.get('/api/verify', (req, res) => {
     refreshKeyIfNeeded();
     const userKey = req.query.key;
-    const isValid = (userKey === keyData.key) && (Date.now() < keyData.expiresAt);
+    
+    // เช็คว่าตรงกับคีย์ประจำชั่วโมง หรือ ตรงกับ Owner Key ถาวรหรือไม่
+    const isValid = (userKey === keyData.key) || (userKey === OWNER_KEY);
+    
     res.json({ valid: isValid });
 });
 
