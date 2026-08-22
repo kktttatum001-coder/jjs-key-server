@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Key - JJS Key System</title>
+    <style>
+        body {
+            background: #121212;
+            color: #ffffff;
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 80px;
+        }
+        .container {
+            background: #1e1e24;
+            display: inline-block;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #00c864;
+            width: 320px;
+        }
+        h1 { margin-bottom: 10px; color: #00c864; font-size: 22px; }
+        p { color: #aaaaaa; margin-bottom: 20px; font-size: 14px; }
+        .key-box {
+            background: #121216;
+            color: #00ff88;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px dashed #00c864;
+            margin-bottom: 20px;
+            word-break: break-all;
+        }
+        .btn {
+            background: #00c864;
+            color: white;
+            padding: 12px 25px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .btn:hover { background: #00e673; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SUCCESS!</h1>
+        <p>ผ่านโฆษณาสำเร็จ นำคีย์นี้ไปใส่ในเกมได้เลย</p>
+        <div class="key-box" id="keyDisplay">กำลังโหลดคีย์...</div>
+        <button class="btn" onclick="copyKey()">COPY KEY</button>
+    </div>
+
+    <script>
+        async function fetchKey() {
+            try {
+                let res = await fetch('/api/get-key');
+                let data = await res.json();
+                document.getElementById('keyDisplay').innerText = data.key;
+            } catch (e) {
+                document.getElementById('keyDisplay').innerText = 'ERROR LOAD KEY';
+            }
+        }
+        fetchKey();
+
+        function copyKey() {
+            let keyText = document.getElementById('keyDisplay').innerText;
+            navigator.clipboard.writeText(keyText);
+            let btn = document.querySelector('.btn');
+            btn.innerText = 'COPIED!';
+            setTimeout(() => { btn.innerText = 'COPY KEY'; }, 1500);
+        }
+    </script>
+</body>
+</html>
