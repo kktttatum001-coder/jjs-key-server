@@ -20,12 +20,17 @@ function refreshKeyIfNeeded() {
     }
 }
 
-// 🌐 เพิ่มคำสั่งนี้เพื่อให้เซิร์ฟเวอร์แสดงหน้าเว็บ index.html ทันทีที่เข้าลิงก์หลัก
+// หน้าเว็บหลัก (สำหรับกดไปดูโฆษณา)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// API สำหรับดึงคีย์
+// หน้าเว็บแสดงคีย์ (หลังจากผ่านโฆษณาแล้ว)
+app.get('/key', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'key.html'));
+});
+
+// API ดึงคีย์
 app.get('/api/get-key', (req, res) => {
     refreshKeyIfNeeded();
     res.json(keyData);
