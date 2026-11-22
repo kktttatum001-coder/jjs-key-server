@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DecorCraft - 2D/3D Interactive Home Decor & IS Project Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Prompt) -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls for Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fbf9f5',
+                            100: '#f5efdf',
+                            200: '#e6d7b8',
+                            500: '#b89865',
+                            600: '#9e7c4d',
+                            800: '#524029',
+                            900: '#2c2215',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .tab-active { border-bottom: 3px solid #b89865; color: #b89865; font-weight: 600; }
+        canvas { touch-action: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchNav('ideas')">
+                    <div class="bg-brand-500 text-white p-2 rounded-xl shadow-md">
+                        <i class="fa-solid fa-couch text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold tracking-tight text-gray-900 block leading-none">Decor<span class="text-brand-500">Craft</span></span>
+                        <span class="text-[10px] text-gray-400 font-medium">IS Project 2D/3D Planner</span>
+                    </div>
+                </div>
+                
+                <nav class="flex space-x-1 sm:space-x-6 overflow-x-auto hide-scrollbar">
+                    <button id="nav-btn-ideas" onclick="switchNav('ideas')" class="px-3 py-2 text-xs sm:text-sm font-medium tab-active transition-colors whitespace-nowrap">
+                        <i class="fa-solid fa-lightbulb mr-1.5"></i> สไตล์ & ความรู้
+                    </button>
+                    <button id="nav-btn-planner" onclick="switchNav('planner')" class="px-3 py-2 text-xs sm:text-sm font-medium text-gray-500 hover:text-brand-500 transition-colors whitespace-nowrap">
+                        <i class="fa-solid fa-cubes mr-1.5"></i> ออกแบบ 2D/3D
+                    </button>
+                    <button id="nav-btn-tools" onclick="switchNav('tools')" class="px-3 py-2 text-xs sm:text-sm font-medium text-gray-500 hover:text-brand-500 transition-colors whitespace-nowrap">
+                        <i class="fa-solid fa-calculator mr-1.5"></i> ประเมินงบ & ควิซ
+                    </button>
+                    <button id="nav-btn-is" onclick="switchNav('is')" class="px-3 py-2 text-xs sm:text-sm font-medium text-gray-500 hover:text-brand-500 transition-colors whitespace-nowrap">
+                        <i class="fa-solid fa-book-bookmark mr-1.5"></i> โครงงาน IS
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- SECTION 1: IDEAS & STYLES -->
+        <section id="section-ideas" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden bg-brand-900 text-white shadow-xl">
+                <div class="absolute inset-0 opacity-40 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80');"></div>
+                <div class="relative z-10 p-8 sm:p-12 md:w-2/3">
+                    <span class="bg-brand-500 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider text-white">Interior Design Hub</span>
+                    <h1 class="text-3xl sm:text-4xl font-bold mt-4 mb-3 leading-tight">ค้นพบไอเดียและทดลองออกแบบบ้านในฝัน</h1>
+                    <p class="text-gray-200 text-sm sm:text-base mb-6 leading-relaxed">รวมคำแนะนำเชิงลึก ทฤษฎีสี การจัดสรรพื้นที่สำหรับคอนโดและบ้าน พร้อมระบบจำลองแบบ 2D/3D Interactive สลับมุมมองได้ทันที</p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="switchNav('planner')" class="bg-brand-500 hover:bg-brand-600 text-white font-medium px-6 py-3 rounded-xl shadow-lg transition duration-200 inline-flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-drafting-compass"></i> เริ่มจำลองจัดห้อง 2D/3D
+                        </button>
+                        <button onclick="switchNav('tools')" class="bg-white/10 hover:bg-white/20 backdrop-blur text-white font-medium px-5 py-3 rounded-xl border border-white/20 transition text-sm">
+                            <i class="fa-solid fa-calculator mr-1"></i> คำนวณงบประมาณ
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decor Styles Grid -->
+            <div>
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-brand-500"></i> สไตล์การตกแต่งยอดนิยม
+                        </h2>
+                        <p class="text-sm text-gray-500 mt-1">สำรวจเอกลักษณ์ โทนสี และเฟอร์นิเจอร์หลักของแต่ละสไตล์</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="style-cards-container">
+                    <!-- Javascript will inject style cards here -->
+                </div>
+            </div>
+
+            <!-- Deep-Dive Knowledge Section -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-10 space-y-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-graduation-cap text-brand-500"></i> คู่มือและหลักการจัดตกแต่งภายใน (Interior Design Knowledge)
+                    </h2>
+                    <p class="text-sm text-gray-500">รวมหลักวิชาการและเทคนิคการตกแต่งบ้านสำหรับประยุกต์ใช้งานจริง</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Rule 60-30-10 & Lighting -->
+                    <div class="bg-brand-50/40 rounded-2xl p-6 border border-brand-100/60">
+                        <div class="w-10 h-10 bg-brand-500 text-white rounded-xl flex items-center justify-center font-bold mb-4 shadow-sm">
+                            <i class="fa-solid fa-swatchbook"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900 mb-2">ทฤษฎีสี 60-30-10 & แสง</h3>
+                        <ul class="text-xs text-gray-600 space-y-2 leading-relaxed">
+                            <li><strong class="text-gray-800">60% สีหลัก:</strong> ผนัง เพดาน พื้น (สร้างบรรยากาศรวม)</li>
+                            <li><strong class="text-gray-800">30% สีรอง:</strong> โซฟา ผ้าม่าน ตู้ขนาดใหญ่ (สร้างความสมดุล)</li>
+                            <li><strong class="text-gray-800">10% สีไฮไลต์:</strong> หมอนอิง ภาพติดผนัง แจกัน (สร้างจุดเด่น)</li>
+                            <li class="pt-2 border-t border-brand-200/60"><strong class="text-brand-800">อุณหภูมิแสง:</strong> Warm White (2700K) เหมาะกับห้องนอน, Cool/Daylight (4000K-6500K) เหมาะกับมุมทำงาน</li>
+                        </ul>
+                    </div>
+
+                    <!-- Space Planning & Clearance -->
+                    <div class="bg-brand-50/40 rounded-2xl p-6 border border-brand-100/60">
+                        <div class="w-10 h-10 bg-brand-500 text-white rounded-xl flex items-center justify-center font-bold mb-4 shadow-sm">
+                            <i class="fa-solid fa-ruler-combined"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900 mb-2">ระยะห่างสเปซมาตรฐาน</h3>
+                        <ul class="text-xs text-gray-600 space-y-2 leading-relaxed">
+                            <li><strong class="text-gray-800">ทางเดินหลัก (Main Walkway):</strong> กว้างอย่างน้อย 80-90 ซม.</li>
+                            <li><strong class="text-gray-800">โซฟาถึงโต๊ะกลาง:</strong> เว้นระยะ 35-45 ซม. ให้เดินลุกสบาย</li>
+                            <li><strong class="text-gray-800">ระยะดูทีวี:</strong> ขนาดทีวี (นิ้ว) x 1.2 = ระยะนั่งห่าง (นิ้ว)</li>
+                            <li class="pt-2 border-t border-brand-200/60"><strong class="text-brand-800">รอบเตียงนอน:</strong> ควรมีพื้นที่ว่างด้านข้างอย่างน้อย 50-60 ซม. สำหรับขึ้น-ลงและปูเตียง</li>
+                        </ul>
+                    </div>
+
+                    <!-- Material Comparison -->
+                    <div class="bg-brand-50/40 rounded-2xl p-6 border border-brand-100/60">
+                        <div class="w-10 h-10 bg-brand-500 text-white rounded-xl flex items-center justify-center font-bold mb-4 shadow-sm">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900 mb-2">คู่มือเลือกวัสดุตกแต่ง</h3>
+                        <ul class="text-xs text-gray-600 space-y-2 leading-relaxed">
+                            <li><strong class="text-gray-800">พื้น SPC:</strong> กันน้ำ 100% ทนปลวก เหมาะกับคอนโดและบ้าน</li>
+                            <li><strong class="text-gray-800">พื้นไม้ลามิเนต:</strong> ให้สัมผัสอบอุ่น ไม่ทนน้ำขัง</li>
+                            <li><strong class="text-gray-800">โซฟาผ้า:</strong> ระบายอากาศดี นุ่มสบาย แต่เปื้อนง่าย</li>
+                            <li class="pt-2 border-t border-brand-200/60"><strong class="text-brand-800">โซฟาหนัง:</strong> เช็ดทำความสะอาดง่าย ดูหรูหรา และมีอายุการใช้งานยาวนาน</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: 2D/3D ROOM PLANNER -->
+        <section id="section-planner" class="hidden h-[calc(100vh-4rem)] flex flex-col md:flex-row overflow-hidden bg-slate-950">
+            
+            <!-- Left Sidebar: Controls & Catalog -->
+            <div class="w-full md:w-88 bg-white border-r border-gray-200 flex flex-col h-full z-10 shadow-lg">
+                <!-- Control Header -->
+                <div class="p-4 border-b border-gray-200 bg-gray-50">
+                    <div class="flex justify-between items-center mb-3">
+                        <h2 class="font-bold text-gray-800 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-brand-500"></i> ออกแบบจัดวางห้อง
+                        </h2>
+                        <span class="text-[10px] bg-brand-100 text-brand-800 font-semibold px-2 py-0.5 rounded-full">Interactive Engine</span>
+                    </div>
+                    
+                    <!-- View Switcher -->
+                    <div class="grid grid-cols-2 gap-1 p-1 bg-gray-200 rounded-xl text-xs font-semibold">
+                        <button id="mode-2d-btn" onclick="switchPlannerView('2d')" class="py-2 rounded-lg bg-white text-brand-600 shadow-sm transition">
+                            <i class="fa-solid fa-map-location-dot mr-1"></i> 平面 2D Plan
+                        </button>
+                        <button id="mode-3d-btn" onclick="switchPlannerView('3d')" class="py-2 rounded-lg text-gray-600 hover:text-gray-900 transition">
+                            <i class="fa-solid fa-cube mr-1"></i> 立体 3D View
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Room Presets & Dimension Config -->
+                <div class="p-4 border-b border-gray-200 bg-white space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">เลือกรูปแบบห้อง/ผังบ้าน (Preset)</label>
+                        <select id="room-preset-select" onchange="applyRoomPreset(this.value)" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-2 text-xs font-medium text-gray-700 focus:outline-none focus:border-brand-500">
+                            <option value="custom">กำหนดขนาดเอง (Custom Size)</option>
+                            <option value="studio">คอนโด Studio (5.0m x 5.0m / 25 ตร.ม.)</option>
+                            <option value="onebed">คอนโด 1 Bedroom (6.5m x 6.0m / 39 ตร.ม.)</option>
+                            <option value="townhome">ห้องนั่งเล่นทาวน์โฮม (8.0m x 6.0m / 48 ตร.ม.)</option>
+                            <option value="largehouse">โถงบ้านเดี่ยว (10.0m x 8.0m / 80 ตร.ม.)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div>
+                            <span class="text-xs text-gray-600 block mb-1">ความกว้าง (X): <strong id="room-width-val" class="text-brand-600">6</strong>m</span>
+                            <input type="range" id="room-width" min="3" max="15" step="0.5" value="6" oninput="updateRoomDimensions()" class="w-full accent-brand-500">
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-600 block mb-1">ความยาว (Z): <strong id="room-length-val" class="text-brand-600">5</strong>m</span>
+                            <input type="range" id="room-length" min="3" max="15" step="0.5" value="5" oninput="updateRoomDimensions()" class="w-full accent-brand-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Furniture Catalog -->
+                <div class="flex-grow overflow-y-auto p-4">
+                    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">คลิกเพื่อเพิ่มเฟอร์นิเจอร์</h3>
+                    <div class="grid grid-cols-2 gap-2" id="furniture-catalog">
+                        <!-- Catalog items injected via JS -->
+                    </div>
+                </div>
+
+                <!-- Selected Item Properties -->
+                <div id="selection-panel" class="p-4 border-t border-gray-200 bg-brand-50/60 hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-xs text-gray-800" id="selected-item-name">รายการที่เลือก</span>
+                        <button onclick="deleteSelectedItem()" class="text-red-500 hover:text-red-700 text-xs px-2 py-1 bg-red-50 rounded-md font-medium border border-red-100">
+                            <i class="fa-solid fa-trash mr-1"></i> ลบวัตถุ
+                        </button>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-gray-600 flex justify-between mb-1">
+                            <span>หมุนทิศทาง (Rotate)</span>
+                            <span id="selected-item-rot-val" class="font-semibold text-brand-600">0°</span>
+                        </label>
+                        <input type="range" id="selected-item-rot" min="0" max="360" value="0" oninput="rotateSelectedItem(this.value)" class="w-full accent-brand-500">
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="p-3 border-t border-gray-200 bg-white flex gap-2">
+                    <button onclick="clearRoom()" class="flex-1 py-2 px-3 border border-gray-300 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> ล้างห้อง
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Workspace: Canvas Area -->
+            <div class="flex-grow relative overflow-hidden flex items-center justify-center bg-slate-900">
+                
+                <!-- 2D Canvas Container -->
+                <div id="container-2d" class="w-full h-full relative flex items-center justify-center p-4">
+                    <canvas id="canvas-2d" class="bg-white rounded-2xl shadow-2xl cursor-crosshair"></canvas>
+                    
+                    <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-3 py-2 rounded-xl shadow text-xs text-gray-600 pointer-events-none flex items-center gap-2">
+                        <i class="fa-solid fa-hand-pointer text-brand-500"></i> ลากวางเพื่อย้ายตำแหน่ง | คลิกเลือกเพื่อหมุนหรือลบ
+                    </div>
+                </div>
+
+                <!-- 3D Canvas Container -->
+                <div id="container-3d" class="w-full h-full relative hidden">
+                    <div id="canvas-3d" class="w-full h-full"></div>
+                    
+                    <div class="absolute bottom-4 left-4 bg-slate-900/80 backdrop-blur text-white px-3 py-2 rounded-xl shadow text-xs pointer-events-none flex items-center gap-3">
+                        <span><i class="fa-solid fa-rotate text-brand-500 mr-1"></i> คลิกซ้ายหมุนมุมมอง</span>
+                        <span><i class="fa-solid fa-arrows-up-down-left-right text-brand-500 mr-1"></i> คลิกขวาย้ายมุมมอง</span>
+                        <span><i class="fa-solid fa-magnifying-glass-plus text-brand-500 mr-1"></i> สกรอลล์เพื่อซูม</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 3: TOOLS (BUDGET ESTIMATOR & QUIZ) -->
+        <section id="section-tools" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+            
+            <!-- Budget Estimator -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100">
+                <div class="max-w-3xl">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-calculator text-brand-500"></i> เครื่องคำนวณงบประมาณตกแต่งเบื้องต้น (Budget Estimator)
+                    </h2>
+                    <p class="text-sm text-gray-500 mb-6">ประเมินค่าใช้จ่ายในการซื้อเฟอร์นิเจอร์และตกแต่งภายในตามขนาดพื้นที่และสไตล์ที่เลือก</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">ขนาดพื้นที่ (ตร.ม.)</label>
+                            <input type="number" id="calc-area" value="35" min="10" max="300" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">สไตล์การตกแต่ง</label>
+                            <select id="calc-style" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-brand-500">
+                                <option value="minimalist">Minimalist (เรียบง่าย)</option>
+                                <option value="nordic">Nordic / Scandinavian (อบอุ่น)</option>
+                                <option value="loft">Industrial Loft (ดิบเท่)</option>
+                                <option value="modern">Modern Luxury (หรูหรา)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">ระดับเกรดวัสดุ/เฟอร์นิเจอร์</label>
+                            <select id="calc-grade" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm font-semibold focus:outline-none focus:border-brand-500">
+                                <option value="standard">Standard (เกรดเริ่มต้น / IKEA / SB)</option>
+                                <option value="premium">Premium (เกรดพรีเมียม / ไม้แท้ / งานบิวต์อิน)</option>
+                                <option value="luxury">Luxury (เกรดนำเข้า / หินอ่อนแท้)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="calculateBudget()" class="bg-brand-500 hover:bg-brand-600 text-white font-medium px-6 py-3 rounded-xl shadow border border-brand-600 transition text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-coins"></i> คำนวณงบประเมิน
+                    </button>
+
+                    <!-- Budget Result Display -->
+                    <div id="budget-result" class="mt-6 p-6 bg-brand-50/60 rounded-2xl border border-brand-100 hidden">
+                        <span class="text-xs text-gray-500 font-semibold uppercase tracking-wider block mb-1">ประมาณการค่าใช้จ่ายรวมโดยประมาณ</span>
+                        <div class="text-3xl font-bold text-brand-800" id="budget-total">0 บาท</div>
+                        <p class="text-xs text-gray-500 mt-2">* หมายเหตุ: เป็นราคาประเมินเฉลี่ยของตลาด รวมค่าเฟอร์นิเจอร์ลอยตัว งานบิวต์อิน และของตกแต่งเบื้องต้น</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Style Finder Quiz -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100">
+                <div class="max-w-3xl">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-clipboard-question text-brand-500"></i> แบบทดสอบค้นหาสไตล์การแต่งบ้านที่ใช่สำหรับคุณ (Style Quiz)
+                    </h2>
+                    <p class="text-sm text-gray-500 mb-6">ตอบคำถามสั้นๆ 2 ข้อ เพื่อค้นหาสไตล์การตกแต่งที่สะท้อนความเป็นตัวคุณ</p>
+
+                    <form id="quiz-form" class="space-y-6">
+                        <!-- Q1 -->
+                        <div>
+                            <label class="block font-semibold text-sm text-gray-800 mb-3">1. บรรยากาศแบบไหนที่คุณชอบที่สุดเมื่อกลับถึงบ้าน?</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q1" value="minimalist" checked class="accent-brand-500">
+                                    <span>โล่ง สะอาดตา ไม่มีของเกะกะ เรียบง่ายที่สุด</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q1" value="nordic" class="accent-brand-500">
+                                    <span>อบอุ่น ละมุน มีแสงธรรมชาติและงานไม้โทนสว่าง</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q1" value="loft" class="accent-brand-500">
+                                    <span>เท่ สไตล์ลอฟท์ มีผนังอิฐ โครงเหล็กสีดำ และหนังแท้</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q1" value="modern" class="accent-brand-500">
+                                    <span>หรูหรา มีมิติด้วยกระจก หินอ่อน และเส้นสายสีทอง</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div>
+                            <label class="block font-semibold text-sm text-gray-800 mb-3">2. โทนสีหลักที่คุณชื่นชอบมากที่สุด?</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q2" value="minimalist" checked class="accent-brand-500">
+                                    <span>สีขาว สีเบจ และสีเทาอ่อน</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q2" value="nordic" class="accent-brand-500">
+                                    <span>สีไม้ธรรมชาติ เขียวใบไม้ และฟ้าพาสเทล</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q2" value="loft" class="accent-brand-500">
+                                    <span>สีส้มอิฐ สีน้ำตาลเข้ม และสีดำ</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:bg-gray-50 cursor-pointer text-xs">
+                                    <input type="radio" name="q2" value="modern" class="accent-brand-500">
+                                    <span>สีดำ ครีม หินอ่อนขาวขีดดำ และขอบทอง</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="button" onclick="submitQuiz()" class="bg-brand-500 hover:bg-brand-600 text-white font-medium px-6 py-3 rounded-xl shadow transition text-sm">
+                            ดูผลการวิเคราะห์สไตล์
+                        </button>
+                    </form>
+
+                    <!-- Quiz Result -->
+                    <div id="quiz-result" class="mt-6 p-6 bg-brand-50 rounded-2xl border border-brand-200 hidden">
+                        <h3 class="font-bold text-lg text-brand-900 mb-1" id="quiz-result-title">ผลลัพธ์สไตล์ของคุณ</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed" id="quiz-result-desc"></p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SECTION 4: IS PROJECT DOCUMENTATION & MEMBERS -->
+        <section id="section-is" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+            
+            <!-- Group Members Section -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-users text-brand-500"></i> คณะผู้จัดทำโครงงาน IS
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-1">นักเรียนชั้นมัธยมศึกษาปีที่ 2/8 (กลุ่มที่ 1)</p>
+                    </div>
+                    <span class="bg-brand-100 text-brand-800 text-xs font-semibold px-3 py-1 rounded-full">ม.2/8</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-brand-50/50 p-5 rounded-2xl border border-brand-100 text-center space-y-2 hover:border-brand-500 transition">
+                        <div class="w-12 h-12 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold mx-auto text-lg shadow-sm">1</div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">ด.ช.ปภังกร แก่นเผือก</h4>
+                            <p class="text-xs text-brand-600 font-medium">ชั้น ม.2/8 เลขที่ 1</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-50/50 p-5 rounded-2xl border border-brand-100 text-center space-y-2 hover:border-brand-500 transition">
+                        <div class="w-12 h-12 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold mx-auto text-lg shadow-sm">2</div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">ด.ช.ศุภอัณ สุยาเต็ม</h4>
+                            <p class="text-xs text-brand-600 font-medium">ชั้น ม.2/8 เลขที่ 2</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-50/50 p-5 rounded-2xl border border-brand-100 text-center space-y-2 hover:border-brand-500 transition">
+                        <div class="w-12 h-12 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold mx-auto text-lg shadow-sm">4</div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">ด.ช.พัชรพล สุทาหวั่น</h4>
+                            <p class="text-xs text-brand-600 font-medium">ชั้น ม.2/8 เลขที่ 4</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-50/50 p-5 rounded-2xl border border-brand-100 text-center space-y-2 hover:border-brand-500 transition">
+                        <div class="w-12 h-12 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold mx-auto text-lg shadow-sm">12</div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">ด.ช.ศุภฤกษ์ มาชมภู</h4>
+                            <p class="text-xs text-brand-600 font-medium">ชั้น ม.2/8 เลขที่ 12</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-brand-50/50 p-5 rounded-2xl border border-brand-100 text-center space-y-2 hover:border-brand-500 transition">
+                        <div class="w-12 h-12 bg-brand-500 text-white rounded-full flex items-center justify-center font-bold mx-auto text-lg shadow-sm">15</div>
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm">ด.ช.พุฒิสันต์ ไชยโยกาศ</h4>
+                            <p class="text-xs text-brand-600 font-medium">ชั้น ม.2/8 เลขที่ 15</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documentation Banner -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100">
+                <div class="flex items-center gap-3 text-brand-600 text-xs font-semibold mb-3">
+                    <span class="bg-brand-100 px-3 py-1 rounded-full uppercase tracking-wider">Independent Study (IS)</span>
+                    <span>รายงานโครงงานการศึกษาค้นคว้าด้วยตนเอง</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">โครงงาน: เว็บไซต์แนะแนวและจำลองการจัดแต่งห้องด้วยระบบ 2D และ 3D Interactive</h1>
+                <p class="text-sm text-gray-600 leading-relaxed mb-6">โครงงานนี้จัดทำขึ้นเพื่อแก้ปัญหาผู้ใช้งานที่ไม่สามารถนึกภาพสเปซการจัดวางเฟอร์นิเจอร์ในชีวิตจริงได้ โดยรวมเอาองค์ความรู้การตกแต่งภายใน สถาปัตยกรรมเว็บไซต์ และระบบประมวลผลกราฟิก 2D/3D เข้าด้วยกัน</p>
+                
+                <!-- Project Specs Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-gray-100">
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800 mb-2"><i class="fa-solid fa-bullseye text-brand-500 mr-1.5"></i> วัตถุประสงค์โครงงาน</h3>
+                        <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+                            <li>เพื่อศึกษาและรวบรวมหลักการแต่งบ้านสไตล์ต่างๆ</li>
+                            <li>เพื่อพัฒนาระบบจำลองแปลน 2D และ 3D บนเว็บ</li>
+                            <li>เพื่อประเมินความพึงพอใจของกลุ่มตัวอย่างผู้ใช้งาน</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800 mb-2"><i class="fa-solid fa-code text-brand-500 mr-1.5"></i> เทคโนโลยีที่ใช้ (Tech Stack)</h3>
+                        <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+                            <li><strong>Frontend UI:</strong> HTML5, Tailwind CSS, Javascript (ES6)</li>
+                            <li><strong>2D Graphics:</strong> HTML5 Canvas API</li>
+                            <li><strong>3D Rendering:</strong> Three.js (WebGL Engine)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800 mb-2"><i class="fa-solid fa-graduation-cap text-brand-500 mr-1.5"></i> ประโยชน์ที่คาดว่าจะได้รับ</h3>
+                        <ul class="text-xs text-gray-600 space-y-1.5 list-disc list-inside">
+                            <li>ช่วยลดความผิดพลาดในการเลือกซื้อเฟอร์นิเจอร์</li>
+                            <li>ช่วยวางแผนงบประมาณตกแต่งล่วงหน้าได้</li>
+                            <li>เป็นสื่อการเรียนรู้ด้าน Interior Design เบื้องต้น</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Satisfaction Survey Table -->
+            <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-sm border border-gray-100">
+                <h2 class="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-brand-500"></i> สรุปผลการประเมินความพึงพอใจของผู้ใช้งาน (Evaluation Results)
+                </h2>
+                <p class="text-xs text-gray-500 mb-6">จากการทดสอบระบบกับกลุ่มตัวอย่างจำนวน 30 คน (คะแนนเต็ม 5.00)</p>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-gray-50 border-b border-gray-200 text-gray-700">
+                                <th class="p-3 font-semibold">ประเด็นการประเมิน</th>
+                                <th class="p-3 font-semibold text-center">คะแนนเฉลี่ย ($\bar{X}$)</th>
+                                <th class="p-3 font-semibold text-center">ส่วนเบี่ยงเบนมาตรฐาน (S.D.)</th>
+                                <th class="p-3 font-semibold text-center">ระดับความพึงพอใจ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-gray-600">
+                            <tr>
+                                <td class="p-3 font-medium text-gray-800">1. ความสวยงามและความเป็นระเบียบของอินเทอร์เฟซ (UI/UX)</td>
+                                <td class="p-3 text-center font-semibold text-brand-600">4.65</td>
+                                <td class="p-3 text-center">0.48</td>
+                                <td class="p-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-semibold">มากที่สุด</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium text-gray-800">2. ความถูกต้องและประโยชน์ของเนื้อหาการแต่งบ้าน</td>
+                                <td class="p-3 text-center font-semibold text-brand-600">4.50</td>
+                                <td class="p-3 text-center">0.51</td>
+                                <td class="p-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-semibold">มากที่สุด</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium text-gray-800">3. ประสิทธิภาพการทำงานของระบบ 2D Floor Plan & 3D Viewer</td>
+                                <td class="p-3 text-center font-semibold text-brand-600">4.42</td>
+                                <td class="p-3 text-center">0.56</td>
+                                <td class="p-3 text-center"><span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-[10px] font-semibold">มาก</span></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-medium text-gray-800">4. ความเร็วในการประมวลผลและการตอบสนองของแอปพลิเคชัน</td>
+                                <td class="p-3 text-center font-semibold text-brand-600">4.58</td>
+                                <td class="p-3 text-center">0.49</td>
+                                <td class="p-3 text-center"><span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-semibold">มากที่สุด</span></td>
+                            </tr>
+                            <tr class="bg-brand-50/50 font-bold text-gray-900">
+                                <td class="p-3">สรุปผลภาพรวมทั้งหมด (Overall Total)</td>
+                                <td class="p-3 text-center text-brand-700">4.54</td>
+                                <td class="p-3 text-center">0.51</td>
+                                <td class="p-3 text-center"><span class="bg-brand-500 text-white px-2 py-0.5 rounded-full text-[10px]">มากที่สุด</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Style Details -->
+    <div id="style-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl transform transition-all">
+            <div class="relative h-56 bg-cover bg-center" id="modal-img">
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-black/50 hover:bg-black text-white w-8 h-8 rounded-full flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 sm:p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2" id="modal-title">Style Title</h3>
+                <p class="text-gray-600 text-xs sm:text-sm mb-6 leading-relaxed" id="modal-desc">Description</p>
+
+                <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-2">โทนสีประจำสไตล์ (Palette)</h4>
+                <div class="flex gap-3 mb-6" id="modal-palette"></div>
+
+                <h4 class="font-bold text-gray-800 text-xs uppercase tracking-wider mb-2">เฟอร์นิเจอร์แนะนำ</h4>
+                <ul class="list-disc list-inside text-xs text-gray-600 space-y-1 mb-6" id="modal-items"></ul>
+
+                <button onclick="closeModal()" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-medium py-3 rounded-xl transition text-sm">
+                    ตกลง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ----------------------------------------------------
+           1. DATA DEFINITIONS
+        ---------------------------------------------------- */
+        const STYLES_DATA = [
+            {
+                id: 'minimalist',
+                name: 'Minimalist',
+                subtitle: 'น้อยแต่มาก เน้นความโปร่งเรียบง่าย',
+                img: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=600&q=80',
+                desc: 'สไตล์การแต่งบ้านที่เน้นความเรียบง่าย ใช้เฟอร์นิเจอร์น้อยชิ้นแต่มีประโยชน์ใช้สอยครบครัน คุมโทนสีขาว เทา เบจ เพื่อความรู้สึกสะอาดตาและเงียบสงบ',
+                palette: ['#FFFFFF', '#F0EAE1', '#D3C5B4', '#4A4A4A'],
+                items: ['โซฟาโทนสีเบจขาไม้', 'โต๊ะกาแฟไม้ทรงเตี้ย', 'โคมไฟตั้งพื้นมินิมอล', 'ต้นไม้กระถางใบใหญ่']
+            },
+            {
+                id: 'loft',
+                name: 'Industrial Loft',
+                subtitle: 'เท่ ดิบ โชว์โครงสร้างอิฐและเหล็ก',
+                img: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=600&q=80',
+                desc: 'เน้นความโปร่งของเพดานสูง การเปิดโชว์ท่อสายไฟ ผนังอิฐสัจจะวัสดุ และพื้นปูนเปลือย เฟอร์นิเจอร์ส่วนใหญ่เป็นหนัง โลหะสีดำ และไม้เนื้อเข้ม',
+                palette: ['#2B2B2B', '#8C6239', '#A6A6A6', '#D97724'],
+                items: ['โซฟาหนังแท้สีน้ำตาล vintage', 'ชั้นวางเหล็กสีดำ', 'โคมไฟหลอดเอดิสัน', 'โต๊ะโครงเหล็กท็อปไม้']
+            },
+            {
+                id: 'nordic',
+                name: 'Nordic / Scandinavian',
+                subtitle: 'อบอุ่น อบอวลด้วยธรรมชาติและแสง',
+                img: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=600&q=80',
+                desc: 'เน้นความอบอุ่น เป็นมิตร ละมุนสายตา ตกแต่งด้วยงานไม้สีอ่อน ผ้าทอ พรม และต้นไม้ใบเขียว ใช้ประโยชน์จากแสงธรรมชาติอย่างเต็มที่',
+                palette: ['#F9F9FB', '#E2D7C5', '#8BA695', '#C5D3E8'],
+                items: ['เก้าอี้อาร์มแชร์ผ้าฝ้าย', 'โต๊ะกินข้าวไม้แอช/โอ๊ค', 'พรมทอถักนุ่ม', 'แจกันดอกไม้แห้ง']
+            },
+            {
+                id: 'modern',
+                name: 'Modern Luxury',
+                subtitle: 'ทันสมัย หรูหรา ด้วยหินอ่อนและโลหะ',
+                img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
+                desc: 'ผสมผสานความทันสมัยเข้ากับความหรูหรา โดดเด่นด้วยลวดลายหินอ่อน คริสตัล ขอบเส้นสแตนเลสสีทองหรือคอปเปอร์ และเฟอร์นิเจอร์กำมะหยี่',
+                palette: ['#1A1A1A', '#D4AF37', '#EAEAEA', '#3B4E68'],
+                items: ['โต๊ะกลางท็อปหินอ่อน', 'โซฟากำมะหยี่สีเข้ม', 'โคมไฟระย้าดีไซน์โมเดิร์น', 'กระจกเงาขอบทอง']
+            }
+        ];
+
+        const FURNITURE_TYPES = [
+            { id: 'sofa', name: 'โซฟา', w: 1.8, d: 0.8, h: 0.7, color: '#8b5cf6', icon: 'fa-couch' },
+            { id: 'table', name: 'โต๊ะทำงาน', w: 1.2, d: 0.6, h: 0.75, color: '#f59e0b', icon: 'fa-table' },
+            { id: 'dining', name: 'โต๊ะกินข้าว', w: 1.5, d: 0.9, h: 0.75, color: '#d97706', icon: 'fa-utensils' },
+            { id: 'bed', name: 'เตียงนอน', w: 1.6, d: 2.0, h: 0.6, color: '#3b82f6', icon: 'fa-bed' },
+            { id: 'wardrobe', name: 'ตู้เสื้อผ้า', w: 1.5, d: 0.6, h: 2.0, color: '#64748b', icon: 'fa-door-closed' },
+            { id: 'tv_unit', name: 'ชั้นวางทีวี', w: 1.5, d: 0.4, h: 0.5, color: '#10b981', icon: 'fa-tv' },
+            { id: 'plant', name: 'ต้นไม้กระถาง', w: 0.5, d: 0.5, h: 0.9, color: '#22c55e', icon: 'fa-plant-wilt' },
+            { id: 'rug', name: 'พรมปูพื้น', w: 2.0, d: 1.5, h: 0.02, color: '#cbd5e1', icon: 'fa-rug' }
+        ];
+
+        /* ----------------------------------------------------
+           2. APP STATE & GLOBAL VARS
+        ---------------------------------------------------- */
+        let activeNav = 'ideas';
+        let plannerView = '2d'; // '2d' or '3d'
+        
+        let roomSize = { width: 6, length: 5, height: 2.8 };
+        let furnitureList = []; 
+        let selectedItemIndex = -1;
+
+        // 2D Canvas State
+        let canvas2d, ctx2d;
+        let isDragging = false;
+        let dragOffsetX = 0, dragOffsetY = 0;
+        let scale2D = 50; 
+
+        // 3D Three.js State
+        let scene3d, camera3d, renderer3d, controls3d;
+        let roomGroup3d, furnitureGroup3d;
+
+        /* ----------------------------------------------------
+           3. INITIALIZATION & NAVIGATION
+        ---------------------------------------------------- */
+        window.onload = function() {
+            renderStyleCards();
+            renderCatalog();
+            init2DCanvas();
+            init3DScene();
+
+            // Default Preset Furniture
+            furnitureList.push(
+                { id: Date.now(), type: 'sofa', x: -1.5, z: -1, rot: 0, w: 1.8, d: 0.8, h: 0.7, color: '#8b5cf6', name: 'โซฟา' },
+                { id: Date.now() + 1, type: 'tv_unit', x: -1.5, z: 1.5, rot: 180, w: 1.5, d: 0.4, h: 0.5, color: '#10b981', name: 'ชั้นวางทีวี' },
+                { id: Date.now() + 2, type: 'plant', x: 2, z: 1.8, rot: 0, w: 0.5, d: 0.5, h: 0.9, color: '#22c55e', name: 'ต้นไม้กระถาง' }
+            );
+
+            draw2D();
+            update3DScene();
+            
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function switchNav(nav) {
+            activeNav = nav;
+            const sections = ['ideas', 'planner', 'tools', 'is'];
+            sections.forEach(s => {
+                const secEl = document.getElementById(`section-${s}`);
+                const btnEl = document.getElementById(`nav-btn-${s}`);
+                if (s === nav) {
+                    secEl.classList.remove('hidden');
+                    btnEl.className = "px-3 py-2 text-xs sm:text-sm font-medium tab-active transition-colors whitespace-nowrap";
+                } else {
+                    secEl.classList.add('hidden');
+                    btnEl.className = "px-3 py-2 text-xs sm:text-sm font-medium text-gray-500 hover:text-brand-500 transition-colors whitespace-nowrap";
+                }
+            });
+
+            if (nav === 'planner') {
+                setTimeout(() => {
+                    resize2DCanvas();
+                    if(plannerView === '3d') onWindowResize();
+                }, 50);
+            }
+        }
+
+        /* ----------------------------------------------------
+           4. IDEAS SECTION LOGIC
+        ---------------------------------------------------- */
+        function renderStyleCards() {
+            const container = document.getElementById('style-cards-container');
+            container.innerHTML = STYLES_DATA.map(style => `
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition border border-gray-100 flex flex-col">
+                    <img src="${style.img}" alt="${style.name}" class="h-44 w-full object-cover">
+                    <div class="p-5 flex-grow flex flex-col">
+                        <h3 class="font-bold text-lg text-gray-900 mb-1">${style.name}</h3>
+                        <p class="text-xs text-brand-600 font-medium mb-3">${style.subtitle}</p>
+                        <p class="text-gray-600 text-xs line-clamp-3 mb-4 flex-grow">${style.desc}</p>
+                        <button onclick="openModal('${style.id}')" class="w-full py-2 bg-gray-100 hover:bg-brand-50 hover:text-brand-600 text-gray-700 rounded-xl text-xs font-semibold transition">
+                            ดูรายละเอียดเพิ่มเติม
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(styleId) {
+            const style = STYLES_DATA.find(s => s.id === styleId);
+            if (!style) return;
+
+            document.getElementById('modal-img').style.backgroundImage = `url('${style.img}')`;
+            document.getElementById('modal-title').innerText = style.name;
+            document.getElementById('modal-desc').innerText = style.desc;
+
+            const paletteContainer = document.getElementById('modal-palette');
+            paletteContainer.innerHTML = style.palette.map(hex => `
+                <div class="flex-1 text-center">
+                    <div class="h-10 rounded-lg shadow-inner border border-gray-200" style="background-color: ${hex}"></div>
+                    <span class="text-[10px] text-gray-500 mt-1 block uppercase">${hex}</span>
+                </div>
+            `).join('');
+
+            const itemsContainer = document.getElementById('modal-items');
+            itemsContainer.innerHTML = style.items.map(item => `<li>${item}</li>`).join('');
+
+            document.getElementById('style-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('style-modal').classList.add('hidden');
+        }
+
+        /* ----------------------------------------------------
+           5. PLANNER ENGINE & PRESETS
+        ---------------------------------------------------- */
+        function renderCatalog() {
+            const container = document.getElementById('furniture-catalog');
+            container.innerHTML = FURNITURE_TYPES.map(f => `
+                <button onclick="addFurniture('${f.id}')" class="flex flex-col items-center justify-center p-3 border border-gray-100 rounded-xl hover:border-brand-500 hover:bg-brand-50/30 transition text-gray-700 bg-gray-50/50">
+                    <i class="fa-solid ${f.icon} text-lg text-brand-500 mb-1"></i>
+                    <span class="text-xs font-medium text-gray-800">${f.name}</span>
+                    <span class="text-[10px] text-gray-400">${f.w}x${f.d}m</span>
+                </button>
+            `).join('');
+        }
+
+        function applyRoomPreset(preset) {
+            if (preset === 'studio') {
+                roomSize.width = 5.0; roomSize.length = 5.0;
+            } else if (preset === 'onebed') {
+                roomSize.width = 6.5; roomSize.length = 6.0;
+            } else if (preset === 'townhome') {
+                roomSize.width = 8.0; roomSize.length = 6.0;
+            } else if (preset === 'largehouse') {
+                roomSize.width = 10.0; roomSize.length = 8.0;
+            }
+
+            document.getElementById('room-width').value = roomSize.width;
+            document.getElementById('room-length').value = roomSize.length;
+            document.getElementById('room-width-val').innerText = roomSize.width;
+            document.getElementById('room-length-val').innerText = roomSize.length;
+
+            draw2D();
+            update3DRoom();
+        }
+
+        function switchPlannerView(view) {
+            plannerView = view;
+            const btn2d = document.getElementById('mode-2d-btn');
+            const btn3d = document.getElementById('mode-3d-btn');
+            const container2d = document.getElementById('container-2d');
+            const container3d = document.getElementById('container-3d');
+
+            if (view === '2d') {
+                btn2d.className = "py-2 rounded-lg bg-white text-brand-600 shadow-sm transition";
+                btn3d.className = "py-2 rounded-lg text-gray-600 hover:text-gray-900 transition";
+                container2d.classList.remove('hidden');
+                container3d.classList.add('hidden');
+                draw2D();
+            } else {
+                btn3d.className = "py-2 rounded-lg bg-white text-brand-600 shadow-sm transition";
+                btn2d.className = "py-2 rounded-lg text-gray-600 hover:text-gray-900 transition";
+                container3d.classList.remove('hidden');
+                container2d.classList.add('hidden');
+                update3DScene();
+                onWindowResize();
+            }
+        }
+
+        function updateRoomDimensions() {
+            document.getElementById('room-preset-select').value = 'custom';
+            roomSize.width = parseFloat(document.getElementById('room-width').value);
+            roomSize.length = parseFloat(document.getElementById('room-length').value);
+            
+            document.getElementById('room-width-val').innerText = roomSize.width;
+            document.getElementById('room-length-val').innerText = roomSize.length;
+
+            draw2D();
+            update3DRoom();
+        }
+
+        function addFurniture(typeId) {
+            const base = FURNITURE_TYPES.find(f => f.id === typeId);
+            if (!base) return;
+
+            const item = {
+                id: Date.now(),
+                type: base.id,
+                name: base.name,
+                x: 0,
+                z: 0,
+                rot: 0,
+                w: base.w,
+                d: base.d,
+                h: base.h,
+                color: base.color
+            };
+
+            furnitureList.push(item);
+            selectedItemIndex = furnitureList.length - 1;
+            updateSelectionPanel();
+
+            draw2D();
+            update3DScene();
+        }
+
+        function deleteSelectedItem() {
+            if (selectedItemIndex >= 0 && selectedItemIndex < furnitureList.length) {
+                furnitureList.splice(selectedItemIndex, 1);
+                selectedItemIndex = -1;
+                updateSelectionPanel();
+                draw2D();
+                update3DScene();
+            }
+        }
+
+        function rotateSelectedItem(val) {
+            if (selectedItemIndex >= 0 && selectedItemIndex < furnitureList.length) {
+                furnitureList[selectedItemIndex].rot = parseInt(val);
+                document.getElementById('selected-item-rot-val').innerText = `${val}°`;
+                draw2D();
+                update3DScene();
+            }
+        }
+
+        function clearRoom() {
+            furnitureList = [];
+            selectedItemIndex = -1;
+            updateSelectionPanel();
+            draw2D();
+            update3DScene();
+        }
+
+        function updateSelectionPanel() {
+            const panel = document.getElementById('selection-panel');
+            if (selectedItemIndex >= 0 && selectedItemIndex < furnitureList.length) {
+                const item = furnitureList[selectedItemIndex];
+                document.getElementById('selected-item-name').innerText = item.name;
+                document.getElementById('selected-item-rot').value = item.rot;
+                document.getElementById('selected-item-rot-val').innerText = `${item.rot}°`;
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        /* ----------------------------------------------------
+           6. 2D CANVAS ENGINE
+        ---------------------------------------------------- */
+        function init2DCanvas() {
+            canvas2d = document.getElementById('canvas-2d');
+            ctx2d = canvas2d.getContext('2d');
+
+            resize2DCanvas();
+
+            canvas2d.addEventListener('mousedown', handlePointerDown);
+            canvas2d.addEventListener('mousemove', handlePointerMove);
+            window.addEventListener('mouseup', handlePointerUp);
+
+            canvas2d.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                handlePointerDown({ clientX: touch.clientX, clientY: touch.clientY });
+            });
+            canvas2d.addEventListener('touchmove', (e) => {
+                const touch = e.touches[0];
+                handlePointerMove({ clientX: touch.clientX, clientY: touch.clientY });
+            });
+            window.addEventListener('touchend', handlePointerUp);
+        }
+
+        function resize2DCanvas() {
+            if(!canvas2d) return;
+            const container = document.getElementById('container-2d');
+            canvas2d.width = container.clientWidth - 32;
+            canvas2d.height = container.clientHeight - 32;
+            
+            const maxDimension = Math.max(roomSize.width, roomSize.length);
+            scale2D = Math.min(canvas2d.width, canvas2d.height) / (maxDimension + 2);
+
+            draw2D();
+        }
+
+        function getCanvasCoords(e) {
+            const rect = canvas2d.getBoundingClientRect();
+            const centerX = canvas2d.width / 2;
+            const centerY = canvas2d.height / 2;
+
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            const roomX = (mouseX - centerX) / scale2D;
+            const roomZ = (mouseY - centerY) / scale2D;
+
+            return { roomX, roomZ, mouseX, mouseY };
+        }
+
+        function handlePointerDown(e) {
+            if (plannerView !== '2d') return;
+            const { roomX, roomZ } = getCanvasCoords(e);
+
+            let foundIndex = -1;
+            for (let i = furnitureList.length - 1; i >= 0; i--) {
+                const item = furnitureList[i];
+                const halfW = item.w / 2;
+                const halfD = item.d / 2;
+
+                if (roomX >= item.x - halfW && roomX <= item.x + halfW &&
+                    roomZ >= item.z - halfD && roomZ <= item.z + halfD) {
+                    foundIndex = i;
+                    break;
+                }
+            }
+
+            if (foundIndex !== -1) {
+                selectedItemIndex = foundIndex;
+                isDragging = true;
+                dragOffsetX = roomX - furnitureList[selectedItemIndex].x;
+                dragOffsetY = roomZ - furnitureList[selectedItemIndex].z;
+            } else {
+                selectedItemIndex = -1;
+            }
+
+            updateSelectionPanel();
+            draw2D();
+        }
+
+        function handlePointerMove(e) {
+            if (!isDragging || selectedItemIndex === -1 || plannerView !== '2d') return;
+            const { roomX, roomZ } = getCanvasCoords(e);
+
+            const item = furnitureList[selectedItemIndex];
+            let newX = roomX - dragOffsetX;
+            let newZ = roomZ - dragOffsetY;
+
+            const maxX = (roomSize.width / 2) - (item.w / 2);
+            const maxZ = (roomSize.length / 2) - (item.d / 2);
+
+            item.x = Math.max(-maxX, Math.min(maxX, newX));
+            item.z = Math.max(-maxZ, Math.min(maxZ, newZ));
+
+            draw2D();
+            update3DScene();
+        }
+
+        function handlePointerUp() {
+            isDragging = false;
+        }
+
+        function draw2D() {
+            if (!ctx2d) return;
+
+            const width = canvas2d.width;
+            const height = canvas2d.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+
+            ctx2d.clearRect(0, 0, width, height);
+
+            // Grid
+            ctx2d.strokeStyle = '#f1f5f9';
+            ctx2d.lineWidth = 1;
+            const gridSize = scale2D / 2; 
+            for (let x = 0; x < width; x += gridSize) {
+                ctx2d.beginPath(); ctx2d.moveTo(x, 0); ctx2d.lineTo(x, height); ctx2d.stroke();
+            }
+            for (let y = 0; y < height; y += gridSize) {
+                ctx2d.beginPath(); ctx2d.moveTo(0, y); ctx2d.lineTo(width, y); ctx2d.stroke();
+            }
+
+            // Room Base
+            const roomPxW = roomSize.width * scale2D;
+            const roomPxL = roomSize.length * scale2D;
+            const roomLeft = centerX - (roomPxW / 2);
+            const roomTop = centerY - (roomPxL / 2);
+
+            ctx2d.fillStyle = '#fafafa';
+            ctx2d.fillRect(roomLeft, roomTop, roomPxW, roomPxL);
+
+            // Room Walls
+            ctx2d.strokeStyle = '#1e293b';
+            ctx2d.lineWidth = 8;
+            ctx2d.strokeRect(roomLeft, roomTop, roomPxW, roomPxL);
+
+            // Dimensions Text
+            ctx2d.fillStyle = '#64748b';
+            ctx2d.font = '500 12px Prompt';
+            ctx2d.textAlign = 'center';
+            ctx2d.fillText(`${roomSize.width} เมตร`, centerX, roomTop - 14);
+            ctx2d.fillText(`${roomSize.length} เมตร`, roomLeft - 24, centerY);
+
+            // Furniture List
+            furnitureList.forEach((item, index) => {
+                const itemPxX = centerX + (item.x * scale2D);
+                const itemPxZ = centerY + (item.z * scale2D);
+                const itemPxW = item.w * scale2D;
+                const itemPxD = item.d * scale2D;
+
+                ctx2d.save();
+                ctx2d.translate(itemPxX, itemPxZ);
+                ctx2d.rotate((item.rot * Math.PI) / 180);
+
+                ctx2d.fillStyle = item.color;
+                ctx2d.fillRect(-itemPxW / 2, -itemPxD / 2, itemPxW, itemPxD);
+
+                if (index === selectedItemIndex) {
+                    ctx2d.strokeStyle = '#b89865';
+                    ctx2d.lineWidth = 3;
+                    ctx2d.strokeRect(-itemPxW / 2 - 3, -itemPxD / 2 - 3, itemPxW + 6, itemPxD + 6);
+                } else {
+                    ctx2d.strokeStyle = '#0f172a';
+                    ctx2d.lineWidth = 1.5;
+                    ctx2d.strokeRect(-itemPxW / 2, -itemPxD / 2, itemPxW, itemPxD);
+                }
+
+                // Direction Marker
+                ctx2d.strokeStyle = '#ffffff';
+                ctx2d.lineWidth = 2;
+                ctx2d.beginPath();
+                ctx2d.moveTo(-itemPxW / 4, -itemPxD / 2 + 4);
+                ctx2d.lineTo(itemPxW / 4, -itemPxD / 2 + 4);
+                ctx2d.stroke();
+
+                // Name Tag
+                ctx2d.fillStyle = '#ffffff';
+                ctx2d.font = '10px Prompt';
+                ctx2d.textAlign = 'center';
+                ctx2d.fillText(item.name, 0, 3);
+
+                ctx2d.restore();
+            });
+        }
+
+        /* ----------------------------------------------------
+           7. 3D THREE.JS ENGINE
+        ---------------------------------------------------- */
+        function init3DScene() {
+            const container = document.getElementById('canvas-3d');
+
+            scene3d = new THREE.Scene();
+            scene3d.background = new THREE.Color(0x0f172a);
+
+            camera3d = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+            camera3d.position.set(0, 10, 12);
+
+            renderer3d = new THREE.WebGLRenderer({ antialias: true });
+            renderer3d.setSize(container.clientWidth, container.clientHeight);
+            renderer3d.shadowMap.enabled = true;
+            renderer3d.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer3d.domElement);
+
+            controls3d = new THREE.OrbitControls(camera3d, renderer3d.domElement);
+            controls3d.enableDamping = true;
+            controls3d.dampingFactor = 0.05;
+            controls3d.maxPolarAngle = Math.PI / 2 - 0.05;
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene3d.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(8, 15, 10);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            scene3d.add(dirLight);
+
+            roomGroup3d = new THREE.Group();
+            furnitureGroup3d = new THREE.Group();
+            scene3d.add(roomGroup3d);
+            scene3d.add(furnitureGroup3d);
+
+            update3DRoom();
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                controls3d.update();
+                renderer3d.render(scene3d, camera3d);
+            }
+            animate();
+        }
+
+        function update3DRoom() {
+            if (!roomGroup3d) return;
+
+            while(roomGroup3d.children.length > 0) { 
+                roomGroup3d.remove(roomGroup3d.children[0]); 
+            }
+
+            const w = roomSize.width;
+            const l = roomSize.length;
+            const h = roomSize.height;
+
+            // Floor
+            const floorGeo = new THREE.PlaneGeometry(w, l);
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.4 });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            roomGroup3d.add(floor);
+
+            // Walls (Back & Left)
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, side: THREE.DoubleSide });
+            
+            const backWall = new THREE.Mesh(new THREE.PlaneGeometry(w, h), wallMat);
+            backWall.position.set(0, h/2, -l/2);
+            backWall.receiveShadow = true;
+            roomGroup3d.add(backWall);
+
+            const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(l, h), wallMat);
+            leftWall.position.set(-w/2, h/2, 0);
+            leftWall.rotation.y = Math.PI / 2;
+            leftWall.receiveShadow = true;
+            roomGroup3d.add(leftWall);
+        }
+
+        function update3DScene() {
+            if (!furnitureGroup3d) return;
+
+            while(furnitureGroup3d.children.length > 0) { 
+                furnitureGroup3d.remove(furnitureGroup3d.children[0]); 
+            }
+
+            furnitureList.forEach(item => {
+                const meshGroup = new THREE.Group();
+
+                const geo = new THREE.BoxGeometry(item.w, item.h, item.d);
+                const mat = new THREE.MeshStandardMaterial({ 
+                    color: item.color,
+                    roughness: 0.4,
+                    metalness: 0.1
+                });
+                
+                const mainMesh = new THREE.Mesh(geo, mat);
+                mainMesh.position.y = item.h / 2;
+                mainMesh.castShadow = true;
+                mainMesh.receiveShadow = true;
+                meshGroup.add(mainMesh);
+
+                const wireframe = new THREE.LineSegments(
+                    new THREE.EdgesGeometry(geo),
+                    new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 1 })
+                );
+                wireframe.position.y = item.h / 2;
+                meshGroup.add(wireframe);
+
+                meshGroup.position.set(item.x, 0, item.z);
+                meshGroup.rotation.y = - (item.rot * Math.PI) / 180;
+
+                furnitureGroup3d.add(meshGroup);
+            });
+        }
+
+        function onWindowResize() {
+            if (!renderer3d || !camera3d) return;
+            const container = document.getElementById('canvas-3d');
+            if (!container || container.clientWidth === 0) return;
+
+            camera3d.aspect = container.clientWidth / container.clientHeight;
+            camera3d.updateProjectionMatrix();
+            renderer3d.setSize(container.clientWidth, container.clientHeight);
+
+            resize2DCanvas();
+        }
+
+        /* ----------------------------------------------------
+           8. TOOLS (BUDGET ESTIMATOR & QUIZ) LOGIC
+        ---------------------------------------------------- */
+        function calculateBudget() {
+            const area = parseFloat(document.getElementById('calc-area').value) || 0;
+            const style = document.getElementById('calc-style').value;
+            const grade = document.getElementById('calc-grade').value;
+
+            let baseRatePerSqm = 8000;
+
+            if (style === 'nordic') baseRatePerSqm += 1500;
+            if (style === 'loft') baseRatePerSqm += 2000;
+            if (style === 'modern') baseRatePerSqm += 4000;
+
+            if (grade === 'premium') baseRatePerSqm *= 1.5;
+            if (grade === 'luxury') baseRatePerSqm *= 2.3;
+
+            const total = Math.round(area * baseRatePerSqm);
+
+            document.getElementById('budget-total').innerText = `${total.toLocaleString()} บาท`;
+            document.getElementById('budget-result').classList.remove('hidden');
+        }
+
+        function submitQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked')?.value || 'minimalist';
+
+            const styleMap = {
+                minimalist: { name: 'Minimalist (มินิมอล)', desc: 'คุณชอบความเรียบง่าย โปร่ง สบายตา เน้นฟังก์ชันและพื้นที่ว่าง โทนสีอบอุ่นอย่างเบจและขาว' },
+                nordic: { name: 'Nordic / Scandinavian (นอร์ดิก)', desc: 'คุณเหมาะกับบ้านสไตล์สแกนดิเนเวีย มีแสงธรรมชาติ ผนังสีสว่าง ผสมผสานไม้สีอ่อนและผ้าทอนุ่มสบาย' },
+                loft: { name: 'Industrial Loft (ลอฟท์)', desc: 'คุณชอบความเท่ มีเสน่ห์แบบดิบๆ โชว์สัจจะวัสดุ เช่น ผนังปูนเปลือย อิฐส้ม โครงเหล็กดำ และหนังแท้' },
+                modern: { name: 'Modern Luxury (โมเดิร์นลักชัวรี)', desc: 'คุณชื่นชอบความเรียบหรู ทันสมัย โดดเด่นด้วยลวดลายหินอ่อน ขอบโลหะสีทอง และความเงางาม' }
+            };
+
+            const selected = styleMap[q1] || styleMap.minimalist;
+
+            document.getElementById('quiz-result-title').innerText = `สไตล์ที่เหมาะกับคุณคือ: ${selected.name}`;
+            document.getElementById('quiz-result-desc').innerText = selected.desc;
+            document.getElementById('quiz-result').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
